@@ -47,7 +47,7 @@ int httpCode = http.POST("{\"name\":\"ham\"}");
 ```
 
 ### Server Deployment
-
+```bash
 # Clone repository
 git clone https://github.com/YOUR-USERNAME/iot-esp8266-flask.git
 cd iot-esp8266-flask
@@ -85,7 +85,7 @@ docker-compose up -d
 - `GET /action` - Control interface
 
 
-##  Key Learnings
+## 🎓 Key Learnings
 
 - Embedded HTTP client implementation
 - Full-stack IoT system design
@@ -93,11 +93,6 @@ docker-compose up -d
 - Real-time data pipeline: Device → Server → Database
 - WiFi communication protocols
 
-## 📊 Performance
-
-- HTTP request latency: ~100-200ms
-- JSON payload size: ~50 bytes
-- Real-time data updates via POST requests
 
 ## 📚 References
 
