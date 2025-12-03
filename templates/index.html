@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Web App</title>
+<link rel="styleSheet" href="/static/style.css"/>
+<style>
+    .section-container {
+        display: flex;
+        gap: 20px;
+        margin: 20px 0;
+    }
+    .data-section {
+        flex: 1;
+        padding: 15px;
+    }
+    .section-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        color: black;
+    }
+    .entry {
+        margin: 10px 0;
+        padding: 10px;
+    }
+    .entry-name {
+        font-weight: bold;
+        font-size: 1.2em;
+        color: black;
+    }
+    .entry-date {
+        color: black;
+        font-size: 0.9em;
+    }
+    .no-data {
+        color: black;
+        font-style: italic;
+        padding: 20px;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+<h1>ESI_SBA</h1><br>
+<img src="/static/esi-sba_im.jpg" width="600px" height="200px" alt="ESI-SBA; CISCo_LABRI"/>
+<h1>Personne</h1><br>
+
+<div class="section-container">
+    <div class="data-section redis-section">
+        <div class="section-title">Redis Cache (Real-time)</div>
+        <div id="redis-container">
+            {% for entry in name %}
+            <div class="entry">
+                <div class="entry-name">
+                    {% if entry.name %}
+                        {{ entry.name }}
+                    {% else %}
+                        {{ entry }}
+                    {% endif %}
+                </div>
+                {% if entry.created_at %}
+                <div class="entry-date">Created: {{ entry.created_at }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="data-section db-section">
+        <div class="section-title">Database (Persistent)</div>
+        <div id="db-container">
+            <div class="no-data">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<h2>Control personne</h2>
+
+<script>
+    // Function to fetch and update Redis data
+    function refreshRedisData() {
+        fetch('/')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('redis-container');
+
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="no-data">No data in cache</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                data.forEach(entry => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.className = 'entry';
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'entry-name';
+                    nameDiv.textContent = entry.name || entry;
+
+                    entryDiv.appendChild(nameDiv);
+
+                    if (entry.created_at) {
+                        const dateDiv = document.createElement('div');
+                        dateDiv.className = 'entry-date';
+                        dateDiv.textContent = 'Created: ' + new Date(entry.created_at).toLocaleString();
+                        entryDiv.appendChild(dateDiv);
+                    }
+
+                    container.appendChild(entryDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching Redis data:', error));
+    }
+
+    // Function to fetch and update Database data
+    function refreshDbData() {
+        fetch('/db-data')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('db-container');
+
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="no-data">No data in database</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                data.forEach(entry => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.className = 'entry';
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'entry-name';
+                    nameDiv.textContent = entry.name || entry;
+
+                    entryDiv.appendChild(nameDiv);
+
+                    if (entry.created_at) {
+                        const dateDiv = document.createElement('div');
+                        dateDiv.className = 'entry-date';
+                        dateDiv.textContent = 'Created: ' + new Date(entry.created_at).toLocaleString();
+                        entryDiv.appendChild(dateDiv);
+                    }
+
+                    if (entry.synced_at) {
+                        const syncDiv = document.createElement('div');
+                        syncDiv.className = 'entry-date';
+                        syncDiv.textContent = 'Synced: ' + new Date(entry.synced_at).toLocaleString();
+                        entryDiv.appendChild(syncDiv);
+                    }
+
+                    container.appendChild(entryDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching database data:', error));
+    }
+
+    // Poll both endpoints every 3 seconds
+    setInterval(() => {
+        refreshRedisData();
+        refreshDbData();
+    }, 3000);
+
+    // Initial load
+    refreshRedisData();
+    refreshDbData();
+</script>
+
+</body>
+</html>
