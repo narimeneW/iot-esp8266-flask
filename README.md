@@ -1,4 +1,4 @@
-# IoT System with ESP8266 and Flask
+# TP IoT System with ESP8266 and Flask
 
 Full-stack IoT system with ESP8266 microcontroller sending sensor data to a Flask web application via HTTP, with Redis storage and Docker deployment.
 
